@@ -1,5 +1,4 @@
 import pandas as pd
-import prince
 import numpy as np
 from scipy.stats import chi2_contingency
 
