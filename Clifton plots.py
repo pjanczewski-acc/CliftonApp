@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
-file_path = "C:/Users/piotr.janczewski/Desktop/Coaching/Olko Team/"
+file_path = "CliftonApp/"
 input_file_name = "IPT_CliftonInputs.xlsx"
 sheet_name = "Sheet1"
 

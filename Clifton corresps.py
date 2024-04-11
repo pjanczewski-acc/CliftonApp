@@ -3,7 +3,8 @@ import prince
 import numpy as np
 from scipy.stats import chi2_contingency
 
-file_path = "C:/Users/piotr.janczewski/Desktop/Coaching/Olko Team/IPT_CliftonInputs.xlsx"
+file_folder = "CliftonApp/"
+file_name = "IPT_CliftonInputs.xlsx"
 sheet_name = "Sheet1"
 def load_data(file_path, sheet_name):
     # Load data from Excel file
@@ -68,18 +69,18 @@ def correspondence_analysis(df_numeric, normalization='symmetric', top_strengths
 
 def save_data(row_ca_df, col_ca_df, explained_variance):
     # Save outputs to Excel workbook
-    file_path_split = file_path.split('.')
-    output_file_path = file_path_split[0] + "." + file_path_split[1] + " - corresp." + file_path_split[2]
-    print(file_path_split)
+    output_file_path =  file_folder + "test.xlsx"
+    print(output_file_path)
     with pd.ExcelWriter(output_file_path) as writer:
         row_ca_df.to_excel(writer, sheet_name='Row_CA_Scores')
         col_ca_df.to_excel(writer, sheet_name='Column_CA_Scores')
         pd.DataFrame(explained_variance, columns=['Explained_Variance']).to_excel(writer, sheet_name='Explained_Variance')
 
 def main():
-    df = load_data(file_path, sheet_name)
+    df = load_data(file_folder + file_name, sheet_name)
 
     # Preprocess the data
+    
     df_numeric = preprocess_data(df)
 
     # Calculate Pearson residuals
