@@ -6,6 +6,18 @@ from zipfile import ZipFile
 import CliftonPlots
 import CliftonCorresps
 
+import json
+import openai
+
+# Load configuration from JSON file
+with open("config.json", mode="r") as f:
+    config = json.load(f)
+
+client = openai.AzureOpenAI(
+        azure_endpoint=config["AZURE_ENDPOINT"],
+        api_key= config["AZURE_API_KEY"],
+        api_version="2023-12-01-preview")
+
 # Function to process the uploaded Excel file and generate result files
 def process_excel(input_file):
     # Load the Excel file
