@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: 'CliftonApp-dev'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E2FFE24664B24ED3B34E0CBE3304F714 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_33DABF05AA5547D5BD3A17B8D8E25419 }}
