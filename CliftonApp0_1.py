@@ -2,39 +2,18 @@ import streamlit as st
 import pandas as pd
 import os
 from zipfile import ZipFile
-
-import CliftonPlots
 import CliftonCorresps
-
 import json
-import openai
-
-# Load configuration from JSON file
-with open("config.json", mode="r") as f:
-    config = json.load(f)
-
-client = openai.AzureOpenAI(
-        azure_endpoint=config["AZURE_ENDPOINT"],
-        api_key= config["AZURE_API_KEY"],
-        api_version="2023-12-01-preview")
-
-# Function to process the uploaded Excel file and generate result files
-def process_excel(input_file):
-    # Load the Excel file
-    
-    CliftonCorresps.create_excel(input_file)
-
-    # Save the processed Excel file
-    output_excel_path = "test.xlsx"
-    
-    png_file_paths = CliftonPlots.create_plots()
-    
-    return output_excel_path, png_file_paths
 
 def zip_files(file_paths, zip_name):
     with ZipFile(zip_name, 'w') as zip:
         for file in file_paths:
             zip.write(file)
+            
+def download_excel(output_excel_path):
+    with open(output_excel_path, "rb") as file:
+        contents = file.read()
+    st.download_button(label="Download", data=contents, file_name="output_excel.xlsx", mime="application/octet-stream")
             
 # Main function to run the Streamlit app
 def main():
@@ -45,18 +24,15 @@ def main():
 
     if uploaded_file is not None:
         # Process the Excel file
-        output_excel_path, png_file_paths = process_excel(uploaded_file)
+        output_excel_path = CliftonCorresps.create_excel(uploaded_file)
+        st.markdown("### Download Output Excel File")
+        st.write("Click the button below to download the output Excel file and upload it to this SharePoint location:")
+        st.markdown("[SharePoint Location](https://your-sharepoint-location)")
+        st.button("Download Excel", key="download_excel", on_click=download_excel(output_excel_path), args=(output_excel_path,))
+        
+        st.markdown("### Power BI Report")
+        st.components.v1.iframe("https://app.powerbi.com/reportEmbed?reportId=your_report_id&config=your_config_id", height=600)
 
-        zip_name = "result_files.zip"
-        zip_files([output_excel_path] + png_file_paths, zip_name)
-
-        with open("result_files.zip", "rb") as fp:
-            btn = st.download_button(
-                label="Download Results",
-                data=fp,
-                file_name="results.zip",
-                mime="application/zip"
-    )
 
 if __name__ == "__main__":
     main()

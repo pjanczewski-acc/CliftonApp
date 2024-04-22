@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
-input_file_name = "IPT_CliftonInputs.xlsx"
 sheet_name = "Sheet1"
 
 # Define domains and colors for different strengths
@@ -230,7 +229,6 @@ def create_stacked_bar_charts(df):
     plt.savefig('Domains by Person.png',dpi = 500)
     plt.show()
     
-
 # Usage:
 def create_plots():
     df, df_inv = open_data(input_file_name)
@@ -238,6 +236,3 @@ def create_plots():
     create_domains_scatterplot(df_inv)
     create_stacked_bar_charts(df)
     return ["- SWOT - Domains.png","- SWOT - 34 top 13.png","Domains by Person.png"]
-
-if __name__ == "__main__":
-    create_plots()
