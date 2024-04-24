@@ -23,7 +23,7 @@ def main():
         
         st.markdown("### Power BI Report")
         
-        st.markdown('<iframe title="CliftonApp.v.4.2" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=c484c675-0935-46fb-a1fa-613daea31592&autoAuth=true&ctid=e0793d39-0939-496d-b129-198edd916feb" frameborder="0" allowFullScreen="true"></iframe>',unsafe_allow_html=True)
+        st.markdown('<iframe title="CliftonApp.v.4.2" width="1140" height="700" src="https://app.powerbi.com/reportEmbed?reportId=c484c675-0935-46fb-a1fa-613daea31592&autoAuth=true&ctid=e0793d39-0939-496d-b129-198edd916feb" frameborder="0" allowFullScreen="true"></iframe>',unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

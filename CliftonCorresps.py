@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import chi2_contingency
+from scipy.spatial.distance import euclidean
 
 sheet_name = "Sheet1"
 output_file_path = "FactsTeam.xlsx"
@@ -59,16 +60,31 @@ def correspondence_analysis(df_numeric, normalization='row_principal', top_stren
     col_ca_scores = Vt[:2, :].T * np.sqrt(total - 1)
     
     # Create DataFrames for row and column coordinates
-    row_ca_df = pd.DataFrame(row_ca_scores, index=df_numeric.index, columns=['X_dimension', 'Y_dimension'])
-    col_ca_df = pd.DataFrame(col_ca_scores, index=df_numeric.columns, columns=['X_dimension', 'Y_dimension'])
-
+    row_ca_df = pd.DataFrame(row_ca_scores, index=df_numeric.index, columns=['NormX_dimension', 'NormY_dimension'])
+    col_ca_df = pd.DataFrame(col_ca_scores, index=df_numeric.columns, columns=['NormX_dimension', 'NormY_dimension'])
+    col_ca_df.index.name = "CliftonStrength"
     return row_ca_df, col_ca_df
 
-def save_data(row_ca_df, col_ca_df):
+def calculate_distance(df):
+    df = df.reset_index()
+    result = []
+    for i in range(len(df)):
+        for j in range(len(df)):
+            point_a = df.iloc[i]['Initials']
+            point_b = df.iloc[j]['Initials']
+            distance = euclidean(df.iloc[i][['NormX_dimension', 'NormY_dimension']], df.iloc[j][['NormX_dimension', 'NormY_dimension']])
+            result.append([point_a, point_b, distance])
+    result_df = pd.DataFrame(result, columns=['PointA', 'PointB', 'NormDistance'])
+    return result_df
+
+def save_data(row_ca_df, col_ca_df,input_df,distance_df):
     # Save outputs to Excel workbook
     with pd.ExcelWriter(output_file_path) as writer:
+        input_df.to_excel(writer, sheet_name='FactsTeam')
         row_ca_df.to_excel(writer, sheet_name='FactsTeamCoordinates')
         col_ca_df.to_excel(writer, sheet_name='FactsTeamStrenghtCoordinates')
+        distance_df.to_excel(writer,sheet_name = 'FactsTeamDistances',index = False)
+        
 
 def create_excel(file):
     df = load_data(file, sheet_name)
@@ -83,5 +99,6 @@ def create_excel(file):
     top_strengths = "yes"
 
     row_ca_df, col_ca_df = correspondence_analysis(df_numeric, normalization=normalization_choice, top_strengths=top_strengths)
-    save_data(row_ca_df, col_ca_df)
+    distance_df = calculate_distance(row_ca_df)
+    save_data(row_ca_df, col_ca_df,df,distance_df)
     return output_file_path
