@@ -3,11 +3,10 @@ import numpy as np
 from scipy.stats import chi2_contingency
 from scipy.spatial.distance import euclidean
 
-sheet_name = "Sheet1"
 output_file_path = "FactsTeam.xlsx"
-def load_data(file_path, sheet_name):
+def load_data(file_path):
     # Load data from Excel file
-    df = pd.read_excel(file_path, sheet_name=sheet_name, header=0, index_col=0)
+    df = pd.read_excel(file_path, header=0, index_col=0)
     return df
 
 def preprocess_data(df):
@@ -82,18 +81,16 @@ def save_data(row_ca_df, col_ca_df,input_df,distance_df):
     with pd.ExcelWriter(output_file_path) as writer:
         input_df.to_excel(writer, sheet_name='FactsTeam')
         row_ca_df.to_excel(writer, sheet_name='FactsTeamCoordinates')
-        col_ca_df.to_excel(writer, sheet_name='FactsTeamStrenghtCoordinates')
+        col_ca_df.to_excel(writer, sheet_name='FactsTeamStrengthCoordinates')
         distance_df.to_excel(writer,sheet_name = 'FactsTeamDistances',index = False)
         
 
 def create_excel(file):
-    df = load_data(file, sheet_name)
+    df = load_data(file)
 
     # Preprocess the data
     df_numeric = preprocess_data(df)
 
-    # Calculate Pearson residuals
-   
     # Perform correspondence analysis
     normalization_choice = 'row_principal'
     top_strengths = "yes"
