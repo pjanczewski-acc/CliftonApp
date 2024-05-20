@@ -75,16 +75,34 @@ def main():
             padding-top: 20px;
         }
         .sidebar .sidebar-content img {
-            width: 100%;
-            height: auto;
-            max-width: 150px;
+            width: 60%;
+            height: 60%;
+            max-width: 100px;
             display: block;
             margin: auto;
         }
         .cover-glow {
-            width: 100%;
-            height: auto;
+            width: 60%;
+            height: 60%;
             padding: 3px;
+            left: 20%;
+            box-shadow: 
+                0 0 5px #000033,
+                0 0 10px #000066,
+                0 0 15px #000099,
+                0 0 20px #0000CC,
+                0 0 25px #0000FF,
+                0 0 30px #3333FF,
+                0 0 35px #6666FF;
+            position: relative;
+            z-index: -1;
+            border-radius: 30px;
+        }
+        .cover-glow2 {
+            width: 30%;
+            height: 30%;
+            padding: 3px;
+            left: 35%;
             box-shadow: 
                 0 0 5px #000033,
                 0 0 10px #000066,
@@ -98,11 +116,11 @@ def main():
             border-radius: 30px;
         }
         .logo {
-            width: 175px;
-            height: 175px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             overflow: hidden;
-            margin-top: 50px;
+            margin-top: 60px;
             box-shadow:
                 0 0 5px #000033,
                 0 0 10px #000066,
@@ -151,14 +169,14 @@ def main():
     st.sidebar.markdown("---")
     
     st.sidebar.markdown(
-        f'<img src="data:image/png;base64,{logo1_img}" class="cover-glow">',
+        f'<img src="data:image/png;base64,{logo1_img}" class="cover-glow2">',
         unsafe_allow_html=True,
     )
     
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        st.markdown("<h1 style='font-size: 75px;text-align: center'>Clifton Strengths Application</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='font-size: 60px;text-align: center'>Clifton Strengths Application</h1>", unsafe_allow_html=True)
 
     with col2:
         st.markdown(
@@ -168,7 +186,7 @@ def main():
     
     with col1:
         st.markdown(
-            f"<div style='text-align: center;'><img src='data:image/png;base64,{clifton_img}' style='width: 90%;' /></div>",
+            f"<div style='text-align: center;'><img src='data:image/png;base64,{clifton_img}' style='width: 70%;' /></div>",
             unsafe_allow_html=True
         )
     
