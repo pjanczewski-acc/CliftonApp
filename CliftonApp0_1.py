@@ -4,6 +4,7 @@ import os
 import CliftonCorresps
 import json
 import base64
+from azure.storage.blob import BlobServiceClient
 
 # Main function to run the Streamlit app
 
@@ -29,9 +30,9 @@ st.set_page_config(
             
             Output Excel File: The application generates an output Excel file containing comprehensive information about the strengths of team members. This file serves as a structured reference for further analysis and decision-making.
             
-            SharePoint Integration: Users are prompted to replace the output Excel file in a designated SharePoint location. This integration ensures that the latest data is always accessible and centrally located for collaboration and sharing within the organization.
+            Azure Blob Storage Integration: Users can upload the output Excel file to Azure Blob Storage. This integration ensures that the latest data is always accessible and centrally located for collaboration and sharing within the organization.
             
-            Power BI Report: Upon replacing the Excel file in SharePoint, users can effortlessly generate a detailed Power BI report. The report provides rich visualizations and insights into the strengths of team members, allowing for in-depth analysis and exploration of trends and patterns.
+            Power BI Report: Upon replacing the Excel file in Blob Storage, users can effortlessly generate a detailed Power BI report. The report provides rich visualizations and insights into the strengths of team members, allowing for in-depth analysis and exploration of trends and patterns.
             
             ###Benefits : 
             
@@ -52,6 +53,9 @@ st.set_page_config(
 )
 
 def main():
+    # Azure Blob Storage configuration
+    connect_str = "DefaultEndpointsProtocol=https;AccountName=polandaidevshared;AccountKey=D6PpHJzA9AXVVsWexsIpQMf1j787boepFdJu5sI2EJi9zYOdU3oXiWq8J0Kqwz1RfomZOhKxbuq5+ASt91NArQ==;EndpointSuffix=core.windows.net"
+    container_name = "polandai-dev-01"  # Replace with your container name
 
     # Convert image to base64
     clifton_img = img_to_base64("images/clifton.png")
@@ -59,8 +63,8 @@ def main():
     logo2_img = img_to_base64("images/logo2.jpg")
     skills_img = img_to_base64("images/skills34.png")
     sample_img = img_to_base64("images/sample_input.png")
-    # Apply custom CSS to make sidebar responsive
 
+    # Apply custom CSS to make sidebar responsive
     st.markdown(
         """
         <style>
@@ -154,15 +158,14 @@ def main():
     )
     st.sidebar.markdown("---")
     
-    show_advanced_info = st.sidebar.toggle("Show Detailed Instructions", value=False)
+    show_advanced_info = st.sidebar.checkbox("Show Detailed Instructions", value=False)
     
     st.sidebar.markdown("---")
     
     st.sidebar.markdown("""
         ### Steps
         - **Upload Input File**: Upload Excel file with single sheet containing strengths for each individual.
-        - **Downlaod Output File** Download created file by clicking one the button.
-        - **Replace File On Sharepoint**: Replace file on sharepoint with the one downloaded.
+        - **Upload to Azure Blob Storage**: The file will be uploaded to Azure Blob Storage.
         - **Analyze The Report**: You can now use the amazing report both in the application window and in a new tab after redirection.
         """)
         
@@ -211,30 +214,32 @@ def main():
         )
         st.markdown("<div class='divider2'></div>", unsafe_allow_html=True)
         
-    uploaded_file = st.file_uploader("", type=["xlsx"],help = "See sidebar for instructions")
+    uploaded_file = st.file_uploader("", type=["xlsx"], help="See sidebar for instructions")
     st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
     
     if uploaded_file is not None:
         output_excel_path = CliftonCorresps.create_excel(uploaded_file)
-        st.markdown("<h2>Download Output File</h2>", unsafe_allow_html=True)
         
-        with open(output_excel_path, "rb") as file:
-            contents = file.read()
-            
-        st.download_button(label="Download File", data=contents, file_name="FactsTeam.xlsx", mime="application/octet-stream")
-        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
-        st.markdown("<h2>Replace File In The Sharepoint Location</h2>", unsafe_allow_html=True)
-        st.markdown("<a href='https://ts.accenture.com/sites/CliftonApp/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FCliftonApp%2FShared%20Documents%2FCliftonApp&viewid=b471a66b%2D616f%2D4bd1%2Db10a%2D804dfeaa698c' style='font-size: 30px;'>SharePoint Location</a>",unsafe_allow_html=True)
+        # Upload file to Azure Blob Storage
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob="test_FactsTeam.xlsx")
         
-        if show_advanced_info:
-            st.markdown("<div class='divider2'></div>", unsafe_allow_html=True)
-            st.markdown("TO DO", unsafe_allow_html=True)
-            st.markdown("<div class='divider2'></div>", unsafe_allow_html=True)
-            
+        with open(output_excel_path, "rb") as data:
+            blob_client.upload_blob(data, overwrite=True)
+         
+        st.markdown("<p style='font-size:24px; margin-top:5px;'>File uploaded to Azure Blob Storage successfully.</p>", unsafe_allow_html=True)
+
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
-        report_path = "https://app.powerbi.com/reportEmbed?reportId=5c9e5bb2-c7dc-4ced-aca9-5c9b726e2225&autoAuth=true&ctid=e0793d39-0939-496d-b129-198edd916feb"
+        report_path = "https://app.powerbi.com/reportEmbed?reportId=c40ef5e8-87e6-4415-be0c-370e990b95fb&autoAuth=true&ctid=e0793d39-0939-496d-b129-198edd916feb"
+        
+        # Adding a hyperlink to the report
+        st.markdown("<h2>Link to Power BI Report</h2>", unsafe_allow_html=True)
+        st.markdown(f'<a href="{report_path}" target="_blank">Open Power BI Report in a new tab</a>', unsafe_allow_html=True) 
+        
+        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+         
         st.markdown("<h2>Power BI Report</h2>", unsafe_allow_html=True)
-        st.markdown(f'<iframe title="CliftonApp.v.4.2" width="100%" height="700" src={report_path} frameborder="0" allowFullScreen="true"></iframe>',unsafe_allow_html=True)
+        st.markdown(f'<iframe title="CliftonApp.v.4.2" width="100%" height="700" src={report_path} frameborder="0" allowFullScreen="true"></iframe>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

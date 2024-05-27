@@ -3,3 +3,4 @@ openpyxl==3.1.2
 pandas==2.0.1
 streamlit==1.32.2
 scipy==1.11.1
+azure-storage-blob
